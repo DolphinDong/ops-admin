@@ -16,7 +16,7 @@ func PrintRequestInfo(c *gin.Context) {
 	startTime := time.Now().UnixMicro()
 	c.Next()
 	endTime := time.Now().UnixMicro()
-	logger.ZapLogger.Infow("", api.TrafficKey, api.GenerateMsgIDFromContext(c),
+	logger.ZapLogger.Infow("", api.RequestIdKey, api.GenerateMsgIDFromContext(c),
 		"method", c.Request.Method,
 		"uri", url.RequestURI(),
 		"client_ip", ip,
@@ -28,7 +28,7 @@ func NoRouter(c *gin.Context) {
 	ip := c.ClientIP()
 	url := c.Request.URL
 	api.GetRequestLogger(c).Infow("Resource not found",
-		api.TrafficKey, api.GenerateMsgIDFromContext(c),
+		api.RequestIdKey, api.GenerateMsgIDFromContext(c),
 		"method", c.Request.Method,
 		"uri", url.RequestURI(),
 		"client_ip", ip,

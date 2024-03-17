@@ -19,5 +19,6 @@ func initAdminRoute(route *gin.RouterGroup) {
 	adminRoute := route.Group("admin")
 	{
 		adminRoute.POST("login", adminApi.UserLogin)
+		adminRoute.POST("ping", adminApi.Ping)
 	}
 }

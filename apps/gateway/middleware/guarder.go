@@ -3,8 +3,12 @@ package middleware
 import (
 	"github.com/DolphinDong/ops-admin/apps/gateway/router"
 	"github.com/DolphinDong/ops-admin/common/api"
+	"github.com/DolphinDong/ops-admin/common/rpc"
+	pb "github.com/DolphinDong/ops-admin/common/rpc/pb/admin"
+	"github.com/DolphinDong/ops-admin/pkg/logger"
 	"github.com/gin-gonic/gin"
 	"net/http"
+	"strconv"
 	"strings"
 )
 
@@ -13,6 +17,8 @@ const (
 	UrlInWriteListKey   = "UrlInWriteListKey"
 	UrlInWriteListValue = "YES"
 )
+
+const ()
 
 type WriteList struct {
 	Url    string
@@ -44,11 +50,22 @@ func ParseToken(c *gin.Context) {
 		api.Error(c, http.StatusUnauthorized, nil, "身份未认证，请登录")
 		return
 	}
-	// TODO 解析token
-	userKey := "123456789"
-	c.Set(api.UserIdKey, userKey)
-	c.Next()
+	// 解析token
+	checkTokenRes, err := rpc.AdminClient.CheckToken(api.SetMetadataToContext(c), &pb.CheckTokenReq{Token: strings.TrimPrefix(token, "Bearer ")})
+	if err != nil {
+		logger.ZapLogger.Warnf("Token解析失败: %v", err)
+		api.Error(c, http.StatusUnauthorized, nil, "Token解析失败")
+		return
+	}
+	// 解析不成功
+	if !checkTokenRes.Success {
+		logger.ZapLogger.Warnf(checkTokenRes.Message)
+		api.Error(c, http.StatusUnauthorized, nil, checkTokenRes.Message)
+		return
+	}
 
+	c.Set(api.UserIdKey, strconv.Itoa(int(checkTokenRes.UserId)))
+	c.Next()
 }
 
 func PermissionCheck(c *gin.Context) {
@@ -57,7 +74,22 @@ func PermissionCheck(c *gin.Context) {
 		c.Next()
 		return
 	}
-	userKey := api.GetUserKeyFromContext(c)
-	// TODO 调用接口确认用户权限
-	api.GetRequestLogger(c).Infof("userKey=%v", userKey)
+	userIdStr := api.GetUserIdFromContext(c)
+	userId, _ := strconv.Atoi(userIdStr)
+	checkPermissionRes, err := rpc.AdminClient.CheckPermission(api.SetMetadataToContext(c), &pb.CheckPermissionReq{
+		Url:    c.Request.URL.Path,
+		Method: c.Request.Method,
+		UserId: int64(userId),
+	})
+	if err != nil {
+		logger.ZapLogger.Warnf("权限校验失败: %v", err)
+		api.Error(c, http.StatusForbidden, nil, "权限校验失败")
+		return
+	}
+	if !checkPermissionRes.Success {
+		logger.ZapLogger.Warnf("权限不足")
+		api.Error(c, http.StatusForbidden, nil, "权限不足")
+		return
+	}
+	c.Next()
 }

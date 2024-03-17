@@ -13,11 +13,17 @@ import (
 )
 
 type (
-	Request  = admin.Request
-	Response = admin.Response
+	CheckPermissionReq = admin.CheckPermissionReq
+	CheckPermissionRes = admin.CheckPermissionRes
+	CheckTokenReq      = admin.CheckTokenReq
+	CheckTokenRes      = admin.CheckTokenRes
+	LoginReq           = admin.LoginReq
+	LoginRes           = admin.LoginRes
 
 	Admin interface {
-		Ping(ctx context.Context, in *Request, opts ...grpc.CallOption) (*Response, error)
+		Login(ctx context.Context, in *LoginReq, opts ...grpc.CallOption) (*LoginRes, error)
+		CheckToken(ctx context.Context, in *CheckTokenReq, opts ...grpc.CallOption) (*CheckTokenRes, error)
+		CheckPermission(ctx context.Context, in *CheckPermissionReq, opts ...grpc.CallOption) (*CheckPermissionRes, error)
 	}
 
 	defaultAdmin struct {
@@ -31,7 +37,17 @@ func NewAdmin(cli zrpc.Client) Admin {
 	}
 }
 
-func (m *defaultAdmin) Ping(ctx context.Context, in *Request, opts ...grpc.CallOption) (*Response, error) {
+func (m *defaultAdmin) Login(ctx context.Context, in *LoginReq, opts ...grpc.CallOption) (*LoginRes, error) {
 	client := admin.NewAdminClient(m.cli.Conn())
-	return client.Ping(ctx, in, opts...)
+	return client.Login(ctx, in, opts...)
+}
+
+func (m *defaultAdmin) CheckToken(ctx context.Context, in *CheckTokenReq, opts ...grpc.CallOption) (*CheckTokenRes, error) {
+	client := admin.NewAdminClient(m.cli.Conn())
+	return client.CheckToken(ctx, in, opts...)
+}
+
+func (m *defaultAdmin) CheckPermission(ctx context.Context, in *CheckPermissionReq, opts ...grpc.CallOption) (*CheckPermissionRes, error) {
+	client := admin.NewAdminClient(m.cli.Conn())
+	return client.CheckPermission(ctx, in, opts...)
 }

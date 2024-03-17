@@ -7,5 +7,6 @@ import (
 
 type Config struct {
 	zrpc.RpcServerConf
-	Mysql config.Mysql
+	Mysql          config.Mysql
+	TokenExpireSec int `json:"TokenExpireSec,default=36000"`
 }

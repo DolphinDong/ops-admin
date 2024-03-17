@@ -1,6 +1,7 @@
 package api
 
 import (
+	"context"
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
@@ -11,10 +12,11 @@ import (
 )
 
 type Api struct {
-	Context *gin.Context
-	Logger  *zap.SugaredLogger
-	UserKey string
-	Errors  error
+	Context         *gin.Context
+	Logger          *zap.SugaredLogger
+	UserKey         string
+	MetadataContext context.Context
+	Errors          error
 }
 
 func (e *Api) AddError(err error) {
@@ -29,7 +31,8 @@ func (e *Api) AddError(err error) {
 func (e *Api) MakeContext(c *gin.Context) *Api {
 	e.Context = c
 	e.Logger = GetRequestLogger(c)
-	e.UserKey = GetUserKeyFromContext(c)
+	e.UserKey = GetUserIdFromContext(c)
+	e.MetadataContext = SetMetadataToContext(c)
 	return e
 }
 

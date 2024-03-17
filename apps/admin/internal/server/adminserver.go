@@ -22,7 +22,17 @@ func NewAdminServer(svcCtx *svc.ServiceContext) *AdminServer {
 	}
 }
 
-func (s *AdminServer) Ping(ctx context.Context, in *admin.Request) (*admin.Response, error) {
-	l := logic.NewPingLogic(ctx, s.svcCtx)
-	return l.Ping(in)
+func (s *AdminServer) Login(ctx context.Context, in *admin.LoginReq) (*admin.LoginRes, error) {
+	l := logic.NewLoginLogic(ctx, s.svcCtx)
+	return l.Login(in)
+}
+
+func (s *AdminServer) CheckToken(ctx context.Context, in *admin.CheckTokenReq) (*admin.CheckTokenRes, error) {
+	l := logic.NewCheckTokenLogic(ctx, s.svcCtx)
+	return l.CheckToken(in)
+}
+
+func (s *AdminServer) CheckPermission(ctx context.Context, in *admin.CheckPermissionReq) (*admin.CheckPermissionRes, error) {
+	l := logic.NewCheckPermissionLogic(ctx, s.svcCtx)
+	return l.CheckPermission(in)
 }

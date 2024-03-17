@@ -1,16 +1,54 @@
 syntax = "proto3";
 
 package admin;
-option go_package="./admin";
+option go_package = "./admin";
 
-message Request {
-  string ping = 1;
+message LoginReq {
+  // @gotags: json="username" uri="username" form="username"  validate:"required"`
+  string  Username = 1;
+  // @gotags: json="password" uri="password" form="password"  validate:"required"`
+  string Password = 2;
 }
 
-message Response {
-  string pong = 1;
+message LoginRes{
+  // @gotags: json="success" uri="success" form="success"  validate:"required"`
+  bool  Success = 1;
+  // @gotags: json="token" uri="token" form="token"  validate:"required"`
+  string Token = 2;
+  // @gotags: json="message" uri="message" form="message"  validate:"required"`
+  string Message = 3;
+}
+
+message CheckTokenReq{
+  // @gotags: json="token" uri="token" form="token"  validate:"required"`
+  string  Token = 1;
+}
+message CheckTokenRes{
+  // @gotags: json="message" uri="message" form="message"  validate:"required"`
+  string Message = 1;
+  // @gotags: json="userId" uri="userId" form="userId"  validate:"required"`
+  int64 UserId = 2;
+  // @gotags: json="success" uri="success" form="success"  validate:"required"`
+  bool  Success = 3;
+}
+message CheckPermissionReq{
+  // @gotags: json="userId" uri="userId" form="userId"  validate:"required"`
+  int64 UserId = 1;
+  // @gotags: json="url" uri="url" form="url"  validate:"required"`
+  string Url = 2;
+  // @gotags: json="method" uri="method" form="method"  validate:"required"`
+  string Method = 3;
+}
+
+message CheckPermissionRes{
+  // @gotags: json="success" uri="success" form="success"  validate:"required"`
+  bool  Success = 1;
 }
 
 service Admin {
-  rpc Ping(Request) returns(Response);
+  rpc Login(LoginReq)returns(LoginRes);
+  rpc CheckToken(CheckTokenReq)returns(CheckTokenRes);
+  rpc CheckPermission(CheckPermissionReq)returns(CheckPermissionRes);
 }
+
+

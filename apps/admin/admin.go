@@ -3,15 +3,17 @@ package main
 import (
 	"flag"
 	"github.com/DolphinDong/ops-admin/apps/admin/internal/config"
+	"github.com/DolphinDong/ops-admin/apps/admin/internal/db"
 	"github.com/DolphinDong/ops-admin/apps/admin/internal/server"
 	"github.com/DolphinDong/ops-admin/apps/admin/internal/svc"
+	"github.com/DolphinDong/ops-admin/common/models"
 	"github.com/DolphinDong/ops-admin/common/rpc/pb/admin"
 	"github.com/DolphinDong/ops-admin/pkg/logger"
+	"github.com/zeromicro/go-zero/core/conf"
 	"go.uber.org/zap"
 	"os"
 	"os/signal"
 
-	"github.com/zeromicro/go-zero/core/conf"
 	"github.com/zeromicro/go-zero/core/service"
 	"github.com/zeromicro/go-zero/zrpc"
 	"google.golang.org/grpc"
@@ -22,17 +24,20 @@ var configFile = flag.String("f", "etc/admin.yaml", "the admin config file")
 
 var (
 	Logger *zap.SugaredLogger
+	c      config.Config
 )
 
 func init() {
 	logger.SetupZap()
 	Logger = logger.ZapLogger
+	flag.Parse()
+	conf.MustLoad(*configFile, &c)
+	models.SetupDB(c.Mysql)
+	db.Migrate(models.GetDB())
 }
 
 func main() {
-	flag.Parse()
-	var c config.Config
-	conf.MustLoad(*configFile, &c)
+
 	ctx := svc.NewServiceContext(c)
 	s := zrpc.MustNewServer(c.RpcServerConf, func(grpcServer *grpc.Server) {
 		admin.RegisterAdminServer(grpcServer, server.NewAdminServer(ctx))
