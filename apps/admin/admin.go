@@ -2,6 +2,7 @@ package main
 
 import (
 	"flag"
+	"github.com/DolphinDong/ops-admin/apps/admin/internal/casbin"
 	"github.com/DolphinDong/ops-admin/apps/admin/internal/config"
 	"github.com/DolphinDong/ops-admin/apps/admin/internal/db"
 	"github.com/DolphinDong/ops-admin/apps/admin/internal/server"
@@ -34,6 +35,7 @@ func init() {
 	conf.MustLoad(*configFile, &c)
 	models.SetupDB(c.Mysql)
 	db.Migrate(models.GetDB())
+	casbin.SetupCasbin(models.GetDB())
 }
 
 func main() {

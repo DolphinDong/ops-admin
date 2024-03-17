@@ -30,8 +30,8 @@ func SetupDB(mysqlConf config.Mysql) {
 		newLogger := glog.New(
 			&dbLogger{}, // io writer
 			glog.Config{
-				SlowThreshold: time.Second, // Slow SQL threshold
-				LogLevel:      glog.Info,   // Log level
+				SlowThreshold: time.Second,                           // Slow SQL threshold
+				LogLevel:      getLoggerLevel(mysqlConf.SqlLogLevel), // Log level
 			},
 		)
 		db, err := gorm.Open(mysql.New(mysql.Config{
@@ -57,4 +57,20 @@ func SetupDB(mysqlConf config.Mysql) {
 
 func GetDB() *gorm.DB {
 	return _db
+}
+
+func getLoggerLevel(level string) glog.LogLevel {
+	switch level {
+	case "info":
+		return glog.Info
+	case "warn":
+		return glog.Warn
+	case "error":
+		return glog.Error
+	case "silent":
+		return glog.Silent
+	default:
+		return glog.Warn
+	}
+	return glog.Warn
 }

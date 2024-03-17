@@ -28,7 +28,7 @@ type WriteList struct {
 var (
 	WriteLists = []WriteList{
 		{
-			Url:    "/admin/login",
+			Url:    router.ApiV1Prefix + "/admin/login",
 			Method: http.MethodPost,
 		},
 	}
@@ -36,7 +36,7 @@ var (
 
 func ParseToken(c *gin.Context) {
 	// 请求路径在白名单内
-	url := strings.TrimSuffix(strings.TrimPrefix(c.Request.URL.Path, router.ApiV1Prefix), "/")
+	url := strings.TrimSuffix(c.Request.URL.Path, "/")
 	for _, w := range WriteLists {
 		if w.Url == url && w.Method == c.Request.Method {
 			c.Set(UrlInWriteListKey, UrlInWriteListValue)
@@ -82,8 +82,8 @@ func PermissionCheck(c *gin.Context) {
 		UserId: int64(userId),
 	})
 	if err != nil {
-		logger.ZapLogger.Warnf("权限校验失败: %v", err)
-		api.Error(c, http.StatusForbidden, nil, "权限校验失败")
+		logger.ZapLogger.Warnf("权限校验异常: %v", err)
+		api.Error(c, http.StatusForbidden, nil, "权限校验异常")
 		return
 	}
 	if !checkPermissionRes.Success {

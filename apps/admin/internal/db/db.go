@@ -10,6 +10,7 @@ import (
 func Migrate(db *gorm.DB) {
 	err := db.AutoMigrate(
 		new(admin.User),
+		new(admin.CasbinRule),
 	)
 	if err != nil {
 		logger.ZapLogger.Fatalf("Migrate db failed: %+v", errors.WithStack(err))
