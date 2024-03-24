@@ -32,6 +32,7 @@ func (e *Api) MakeContext(c *gin.Context) *Api {
 	e.Context = c
 	e.Logger = GetRequestLogger(c)
 	e.UserKey = GetUserIdFromContext(c)
+	// 将userid 和request id 放入这个context中内，这样在rpc服务端就可以获取到这些值了
 	e.MetadataContext = SetMetadataToContext(c)
 	return e
 }
@@ -70,7 +71,7 @@ func (e *Api) Bind(d interface{}, bindings ...binding.Binding) *Api {
 func (e *Api) Validate(struc interface{}) *Api {
 	err := validator.New().Struct(struc)
 	if err != nil {
-		msg := "Invalid parameter: "
+		msg := "非法的参数："
 		es := err.(validator.ValidationErrors)
 		errFields := []string{}
 		for _, e := range es {

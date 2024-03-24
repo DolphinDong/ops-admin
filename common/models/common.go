@@ -21,7 +21,7 @@ func (e *ControlBy) SetUpdateBy(updateBy int) {
 	e.UpdateBy = updateBy
 }
 
-type Model struct {
+type BseId struct {
 	Id int `json:"id" gorm:"primaryKey;autoIncrement;comment:主键编码"`
 }
 

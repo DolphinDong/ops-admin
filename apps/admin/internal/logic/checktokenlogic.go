@@ -30,9 +30,9 @@ func (l *CheckTokenLogic) CheckToken(req *pb.CheckTokenReq) (*pb.CheckTokenRes, 
 	claims, err := tools.ParseToken(req.Token)
 	if err != nil {
 		// token 过期
-		if strings.Contains(err.Error(), "token is expired by") {
-			l.svcCtx.Logger(l.ctx).Infof("Token已过期，请重新登陆")
-			return &pb.CheckTokenRes{Success: false, Message: "Token已过期，请重新登陆"}, nil
+		if strings.Contains(err.Error(), "token has invalid claims") {
+			l.svcCtx.Logger(l.ctx).Infof("登录已过期，请重新登陆")
+			return &pb.CheckTokenRes{Success: false, Message: "登录已过期，请重新登陆"}, nil
 		}
 		l.svcCtx.Logger(l.ctx).Errorf("Parse token failed: %+v", errors.WithStack(err))
 		return nil, errors.Errorf("Parse token error: %s", err.Error())

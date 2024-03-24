@@ -31,6 +31,10 @@ var (
 			Url:    router.ApiV1Prefix + "/admin/login",
 			Method: http.MethodPost,
 		},
+		{
+			Url:    router.ApiV1Prefix + "/admin/logout",
+			Method: http.MethodGet,
+		},
 	}
 )
 
@@ -87,8 +91,8 @@ func PermissionCheck(c *gin.Context) {
 		return
 	}
 	if !checkPermissionRes.Success {
-		logger.ZapLogger.Warnf("权限不足")
-		api.Error(c, http.StatusForbidden, nil, "权限不足")
+		logger.ZapLogger.Warnf("权限拒绝")
+		api.Error(c, http.StatusForbidden, nil, "权限拒绝")
 		return
 	}
 	c.Next()

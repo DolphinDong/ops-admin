@@ -25,7 +25,7 @@ func Error(c *gin.Context, code int, err error, msg string) {
 // OK 通常成功数据处理
 func OK(c *gin.Context, data interface{}, msg string) {
 	res := Default.Clone()
-	res.SetData(data)
+	res.SetResult(data)
 	res.SetSuccess(true)
 	if msg != "" {
 		res.SetMsg(msg)
@@ -40,8 +40,8 @@ func OK(c *gin.Context, data interface{}, msg string) {
 // PageOK 分页数据处理
 func PageOK(c *gin.Context, result interface{}, count int, pageIndex int, pageSize int, msg string) {
 	var res page
-	res.List = result
-	res.Count = count
+	res.Items = result
+	res.Total = count
 	res.PageIndex = pageIndex
 	res.PageSize = pageSize
 	OK(c, res, msg)
@@ -58,29 +58,29 @@ type Response struct {
 	// 数据集
 	RequestId string `protobuf:"bytes,1,opt,name=requestId,proto3" json:"requestId,omitempty"`
 	Code      int32  `protobuf:"varint,2,opt,name=code,proto3" json:"code,omitempty"`
-	Msg       string `protobuf:"bytes,3,opt,name=msg,proto3" json:"msg,omitempty"`
+	Message   string `protobuf:"bytes,3,opt,name=message,proto3" json:"message,omitempty"`
 	Status    string `protobuf:"bytes,4,opt,name=status,proto3" json:"status,omitempty"`
 }
 
 type response struct {
 	Response
-	Data interface{} `json:"data"`
+	Result interface{} `json:"result"`
 }
 
 type Page struct {
-	Count     int `json:"count"`
+	Total     int `json:"total"`
 	PageIndex int `json:"pageIndex"`
 	PageSize  int `json:"pageSize"`
 }
 type page struct {
 	Page
-	List interface{} `json:"list"`
+	Items interface{} `json:"items"`
 }
 
 var Default = &response{}
 
-func (e *response) SetData(data interface{}) {
-	e.Data = data
+func (e *response) SetResult(result interface{}) {
+	e.Result = result
 }
 
 func (e response) Clone() *response {
@@ -92,7 +92,7 @@ func (e *response) SetTraceID(id string) {
 }
 
 func (e *response) SetMsg(s string) {
-	e.Msg = s
+	e.Message = s
 }
 
 func (e *response) SetCode(code int32) {

@@ -3,10 +3,9 @@ package rpc
 import (
 	"github.com/DolphinDong/ops-admin/common/rpc/clients/adminclient"
 	"github.com/DolphinDong/ops-admin/common/rpc/pb/admin"
+	"github.com/DolphinDong/ops-admin/pkg/logger"
 	"github.com/pkg/errors"
-	"github.com/zeromicro/go-zero/core/logx"
 	"github.com/zeromicro/go-zero/zrpc"
-	"os"
 )
 
 var (
@@ -17,8 +16,7 @@ func MustInitRpcClient(adminConfig *zrpc.RpcClientConf) {
 	if adminConfig != nil {
 		client, err := zrpc.NewClient(*adminConfig)
 		if err != nil {
-			logx.Errorf("New admin client failed: %+v", errors.WithStack(err))
-			os.Exit(1)
+			logger.ZapLogger.Fatalf("New admin client failed: %+v", errors.WithStack(err))
 		}
 		AdminClient = adminclient.NewAdmin(client)
 	}

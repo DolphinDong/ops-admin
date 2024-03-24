@@ -67,4 +67,5 @@ func InitEngine(engin *gin.Engine) {
 	middleware.InitMiddleware(engin)
 	Logger.Info("Init route success")
 	router.InitRoute(engin)
+
 }

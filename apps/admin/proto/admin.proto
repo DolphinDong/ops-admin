@@ -4,51 +4,143 @@ package admin;
 option go_package = "./admin";
 
 message LoginReq {
-  // @gotags: json="username" uri="username" form="username"  validate:"required"`
+  // @gotags: json:"username" uri:"username" form:"username"  validate:"required"
   string  Username = 1;
-  // @gotags: json="password" uri="password" form="password"  validate:"required"`
+  // @gotags: json:"password" uri:"password" form:"password"  validate:"required"
   string Password = 2;
 }
 
 message LoginRes{
-  // @gotags: json="success" uri="success" form="success"  validate:"required"`
+  // @gotags: json:"success" uri:"success" form:"success"  validate:"required"
   bool  Success = 1;
-  // @gotags: json="token" uri="token" form="token"  validate:"required"`
+  // @gotags: json:"token" uri:"token" form:"token"  validate:"required"
   string Token = 2;
-  // @gotags: json="message" uri="message" form="message"  validate:"required"`
+  // @gotags: json:"message" uri:"message" form:"message"  validate:"required"
   string Message = 3;
 }
+message LogoutReq {
 
+}
+message LogoutRes{
+
+}
 message CheckTokenReq{
-  // @gotags: json="token" uri="token" form="token"  validate:"required"`
+  // @gotags: json:"token" uri:"token" form:"token"  validate:"required"
   string  Token = 1;
 }
 message CheckTokenRes{
-  // @gotags: json="message" uri="message" form="message"  validate:"required"`
+  // @gotags: json:"message" uri:"message" form:"message"  validate:"required"
   string Message = 1;
-  // @gotags: json="userId" uri="userId" form="userId"  validate:"required"`
+  // @gotags: json:"userId" uri:"userId" form:"userId"  validate:"required"
   int64 UserId = 2;
-  // @gotags: json="success" uri="success" form="success"  validate:"required"`
+  // @gotags: json:"success" uri:"success" form:"success"  validate:"required"
   bool  Success = 3;
 }
 message CheckPermissionReq{
-  // @gotags: json="userId" uri="userId" form="userId"  validate:"required"`
+  // @gotags: json:"userId" uri:"userId" form:"userId"  validate:"required"
   int64 UserId = 1;
-  // @gotags: json="url" uri="url" form="url"  validate:"required"`
+  // @gotags: json:"url" uri:"url" form:"url"  validate:"required"`
   string Url = 2;
-  // @gotags: json="method" uri="method" form="method"  validate:"required"`
+  // @gotags: json:"method" uri:"method" form:"method"  validate:"required"
   string Method = 3;
 }
 
 message CheckPermissionRes{
-  // @gotags: json="success" uri="success" form="success"  validate:"required"`
+  // @gotags: json:"success" uri:"success" form:"success"  validate:"required"
   bool  Success = 1;
 }
 
+message MenuMeta{
+  // @gotags: json:"title" uri:"title" form:"title"
+  string Title = 1;
+  // @gotags: json:"ignoreKeepAlive" uri:"ignoreKeepAlive" form:"ignoreKeepAlive"
+  bool IgnoreKeepAlive = 2;
+  // @gotags: json:"icon,omitempty" uri:"icon" form:"icon"
+  string Icon = 3;
+  // @gotags: json:"hideChildrenInMenu" uri:"hideChildrenInMenu" form:"hideChildrenInMenu"
+  bool HideChildrenInMenu = 5;
+  // @gotags: json:"hideMenu" uri:"hideMenu" form:"hideMenu"
+  bool HideMenu = 6;
+  // @gotags: json:"orderNo" uri:"orderNo" form:"orderNo"
+  int64 OrderNo = 7;
+  // @gotags: json:"ignoreRoute" uri:"ignoreRoute" form:"ignoreRoute"
+  bool IgnoreRoute = 8;
+  // @gotags: json:"hidePathForChildren" uri:"hidePathForChildren" form:"hidePathForChildren"
+  bool HidePathForChildren = 9;
+}
+
+message GetMenuListReq{
+
+}
+message Menu {
+  // @gotags: json:"id" uri:"id" form:"id"
+  int64 Id = 8;
+  // @gotags: json:"path" uri:"path" form:"path"
+  string Path = 1;
+  // @gotags: json:"name" uri:"name" form:"name"
+  string Name = 2;
+  // @gotags: json:"component" uri:"component" form:"component"
+  string Component = 3;
+  // @gotags: json:"redirect,omitempty" uri:"redirect" form:"redirect"
+  string Redirect = 4;
+  // @gotags: json:"meta" uri:"meta" form:"meta"
+  MenuMeta Meta = 5;
+  // @gotags: json:"children" uri:"children" form:"children"
+  repeated  Menu Children = 6;
+  // @gotags: json:"-"
+  int64 ParentMenu = 7;
+}
+
+message GetMenuListRes{
+  repeated  Menu Menu = 1;
+}
+message GetUserInfoReq{
+
+}
+message GetUserInfoRes{
+  // @gotags: json:"id" uri:"id" form:"id"
+  int64 Id = 6;
+  // @gotags: json:"username" uri:"username" form:"username"
+  string Username = 1;
+  // @gotags: json:"nickname" uri:"nickname" form:"nickname"
+  string NickName = 2;
+  // @gotags: json:"email" uri:"email" form:"email"
+  string Email = 3;
+  // @gotags: json:"tel" uri:"tel" form:"tel"
+  string Tel = 4;
+  // @gotags: json:"roles" uri:"roles" form:"roles"
+  repeated string Roles = 5;
+}
+
+message GetPermCodeReq{
+
+}
+message GetPermCodeRes{
+  // @gotags: json:"permissionCodes" uri:"permissionCodes" form:"permissionCodes"
+  repeated string PermissionCodes = 1;
+}
+message ApiItem{
+  string Path = 1;
+  string   Method = 2;
+  string  Handler = 3;
+}
+message AddOrUpdateApiReq{
+  repeated  ApiItem Apis = 1;
+}
+
+message AddOrUpdateApiRes{
+
+}
 service Admin {
   rpc Login(LoginReq)returns(LoginRes);
+  rpc Logout(LogoutReq)returns(LogoutRes);
   rpc CheckToken(CheckTokenReq)returns(CheckTokenRes);
   rpc CheckPermission(CheckPermissionReq)returns(CheckPermissionRes);
+  // 列出当前 用户拥有的菜单
+  rpc GetMenuList(GetMenuListReq)returns(GetMenuListRes);
+  rpc GetUserInfo(GetUserInfoReq)returns(GetUserInfoRes);
+  rpc GetPermCode(GetPermCodeReq)returns(GetPermCodeRes);
+  rpc AddOrUpdateApi(AddOrUpdateApiReq)returns(AddOrUpdateApiRes);
 }
 
 

@@ -3,7 +3,7 @@ package tools
 import (
 	"crypto/md5"
 	"encoding/hex"
-	"github.com/golang-jwt/jwt/v4"
+	"github.com/golang-jwt/jwt/v5"
 	"github.com/pkg/errors"
 	"strings"
 	"time"
@@ -22,7 +22,7 @@ func CreateToken(issuer string, periodMinutes int) (tokenString string, err erro
 		ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Second * m)),
 		Issuer:    issuer,
 	}
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+	token := jwt.NewWithClaims(jwt.SigningMethodHS512, claims)
 	tokenString, err = token.SignedString(secretKey)
 	return
 }

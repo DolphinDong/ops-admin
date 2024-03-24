@@ -9,6 +9,7 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/pkg/errors"
 	"gorm.io/gorm"
+	"strings"
 	"sync"
 	"time"
 )
@@ -34,7 +35,7 @@ g = _, _
 e = some(where (p.eft == allow))
 
 [matchers]
-m = g(r.sub, p.sub) && r.obj == p.obj && r.act == p.act
+m = g(r.sub, p.sub) && keyMatch2(r.obj, p.obj) && ignoreCase(r.act, p.act)
 `)
 		if err != nil {
 			logger.ZapLogger.Fatalf("New casbin model failed: %+v", errors.WithStack(err))
@@ -48,6 +49,7 @@ m = g(r.sub, p.sub) && r.obj == p.obj && r.act == p.act
 		if err != nil {
 			logger.ZapLogger.Fatalf("New casbin enforcer failed: %+v", errors.WithStack(err))
 		}
+		enforcer.AddFunction("ignoreCase", IgnoreCaseFunc)
 		err = enforcer.LoadPolicy()
 		if err != nil {
 			logger.ZapLogger.Fatalf("Load casbin policy failed: %+v", errors.WithStack(err))
@@ -65,7 +67,7 @@ func GetEnforcer() *casbin.Enforcer {
 func loadPolicyCyclic() {
 	for {
 		select {
-		case <-time.NewTicker(time.Minute).C:
+		case <-time.NewTicker(time.Second * 15).C:
 			err := _enforcer.LoadPolicy()
 			if err != nil {
 				logger.ZapLogger.Errorf("Load casbin policy failed: %+v", errors.WithStack(err))
@@ -74,4 +76,13 @@ func loadPolicyCyclic() {
 			}
 		}
 	}
+}
+
+func IgnoreCase(key1 string, key2 string) bool {
+	return strings.ToLower(key1) == strings.ToLower(key2)
+}
+func IgnoreCaseFunc(args ...interface{}) (interface{}, error) {
+	name1 := args[0].(string)
+	name2 := args[1].(string)
+	return (bool)(IgnoreCase(name1, name2)), nil
 }

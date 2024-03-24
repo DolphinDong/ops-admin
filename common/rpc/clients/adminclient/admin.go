@@ -13,17 +13,36 @@ import (
 )
 
 type (
+	AddOrUpdateApiReq  = admin.AddOrUpdateApiReq
+	AddOrUpdateApiRes  = admin.AddOrUpdateApiRes
+	ApiItem            = admin.ApiItem
 	CheckPermissionReq = admin.CheckPermissionReq
 	CheckPermissionRes = admin.CheckPermissionRes
 	CheckTokenReq      = admin.CheckTokenReq
 	CheckTokenRes      = admin.CheckTokenRes
+	GetMenuListReq     = admin.GetMenuListReq
+	GetMenuListRes     = admin.GetMenuListRes
+	GetPermCodeReq     = admin.GetPermCodeReq
+	GetPermCodeRes     = admin.GetPermCodeRes
+	GetUserInfoReq     = admin.GetUserInfoReq
+	GetUserInfoRes     = admin.GetUserInfoRes
 	LoginReq           = admin.LoginReq
 	LoginRes           = admin.LoginRes
+	LogoutReq          = admin.LogoutReq
+	LogoutRes          = admin.LogoutRes
+	Menu               = admin.Menu
+	MenuMeta           = admin.MenuMeta
 
 	Admin interface {
 		Login(ctx context.Context, in *LoginReq, opts ...grpc.CallOption) (*LoginRes, error)
+		Logout(ctx context.Context, in *LogoutReq, opts ...grpc.CallOption) (*LogoutRes, error)
 		CheckToken(ctx context.Context, in *CheckTokenReq, opts ...grpc.CallOption) (*CheckTokenRes, error)
 		CheckPermission(ctx context.Context, in *CheckPermissionReq, opts ...grpc.CallOption) (*CheckPermissionRes, error)
+		// 列出当前 用户拥有的菜单
+		GetMenuList(ctx context.Context, in *GetMenuListReq, opts ...grpc.CallOption) (*GetMenuListRes, error)
+		GetUserInfo(ctx context.Context, in *GetUserInfoReq, opts ...grpc.CallOption) (*GetUserInfoRes, error)
+		GetPermCode(ctx context.Context, in *GetPermCodeReq, opts ...grpc.CallOption) (*GetPermCodeRes, error)
+		AddOrUpdateApi(ctx context.Context, in *AddOrUpdateApiReq, opts ...grpc.CallOption) (*AddOrUpdateApiRes, error)
 	}
 
 	defaultAdmin struct {
@@ -42,6 +61,11 @@ func (m *defaultAdmin) Login(ctx context.Context, in *LoginReq, opts ...grpc.Cal
 	return client.Login(ctx, in, opts...)
 }
 
+func (m *defaultAdmin) Logout(ctx context.Context, in *LogoutReq, opts ...grpc.CallOption) (*LogoutRes, error) {
+	client := admin.NewAdminClient(m.cli.Conn())
+	return client.Logout(ctx, in, opts...)
+}
+
 func (m *defaultAdmin) CheckToken(ctx context.Context, in *CheckTokenReq, opts ...grpc.CallOption) (*CheckTokenRes, error) {
 	client := admin.NewAdminClient(m.cli.Conn())
 	return client.CheckToken(ctx, in, opts...)
@@ -50,4 +74,25 @@ func (m *defaultAdmin) CheckToken(ctx context.Context, in *CheckTokenReq, opts .
 func (m *defaultAdmin) CheckPermission(ctx context.Context, in *CheckPermissionReq, opts ...grpc.CallOption) (*CheckPermissionRes, error) {
 	client := admin.NewAdminClient(m.cli.Conn())
 	return client.CheckPermission(ctx, in, opts...)
+}
+
+// 列出当前 用户拥有的菜单
+func (m *defaultAdmin) GetMenuList(ctx context.Context, in *GetMenuListReq, opts ...grpc.CallOption) (*GetMenuListRes, error) {
+	client := admin.NewAdminClient(m.cli.Conn())
+	return client.GetMenuList(ctx, in, opts...)
+}
+
+func (m *defaultAdmin) GetUserInfo(ctx context.Context, in *GetUserInfoReq, opts ...grpc.CallOption) (*GetUserInfoRes, error) {
+	client := admin.NewAdminClient(m.cli.Conn())
+	return client.GetUserInfo(ctx, in, opts...)
+}
+
+func (m *defaultAdmin) GetPermCode(ctx context.Context, in *GetPermCodeReq, opts ...grpc.CallOption) (*GetPermCodeRes, error) {
+	client := admin.NewAdminClient(m.cli.Conn())
+	return client.GetPermCode(ctx, in, opts...)
+}
+
+func (m *defaultAdmin) AddOrUpdateApi(ctx context.Context, in *AddOrUpdateApiReq, opts ...grpc.CallOption) (*AddOrUpdateApiRes, error) {
+	client := admin.NewAdminClient(m.cli.Conn())
+	return client.AddOrUpdateApi(ctx, in, opts...)
 }
